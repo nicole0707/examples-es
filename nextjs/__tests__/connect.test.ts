@@ -4,11 +4,20 @@ import { ElizaService } from "../gen/connectrpc/eliza/v1/eliza_connect.js";
 import { ConverseRequest, IntroduceRequest, SayRequest } from "../gen/connectrpc/eliza/v1/eliza_pb.js";
 import routes from "../connect.js";
 
+const optionsHttp1 = {
+    baseUrl: "https://demo.connectrpc.com",
+    httpVersion: "1.1" as const,
+  };
 
 describe("testing the eliza service with an in-memory server", () => {
     it("say should repeat what we said", async () => {
         // Create an in-memory transport with the routes from connect.ts
-        const transport = createRouterTransport(routes);
+        const transport = createRouterTransport(routes, {
+            transport: optionsHttp1,
+            router: {
+                grpc: true
+            }
+        });
         const client = createPromiseClient(ElizaService, transport);
         const { sentence } = await client.say({ sentence: "hello" });
         expect(sentence).toBe("You said hello");

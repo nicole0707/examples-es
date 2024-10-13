@@ -2,7 +2,7 @@ import styles from "@/styles/Eliza.module.css";
 import { revalidateTag, unstable_cache } from "next/cache";
 import { createPromiseClient } from "@connectrpc/connect";
 import { ElizaService } from "@/gen/connectrpc/eliza/v1/eliza_connect";
-import { createConnectTransport } from "@connectrpc/connect-web";
+import { createGrpcTransport } from "@connectrpc/connect-node";
 import { getMessages, addMessage } from "./fake-db";
 
 const getMessagesCached = unstable_cache(getMessages, ["my-messages"]);
@@ -13,7 +13,8 @@ export default async function Page() {
     "use server";
     const elizaClient = createPromiseClient(
       ElizaService,
-      createConnectTransport({
+      createGrpcTransport({
+        httpVersion:'1.1',
         baseUrl: "https://demo.connectrpc.com",
       }),
     );
